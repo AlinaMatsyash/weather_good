@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+// import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
+import 'package:weather_good/screens/location_screen.dart';
 import 'package:weather_good/screens/splash_screen.dart';
 import 'package:weather_good/theme/app_text_styles.dart';
-
 import 'controllers/change_theme.dart';
 
 void main() async {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // MobileAds.instance.initialize();
   await GetStorage.init();
   runApp(const MyApp());
 }

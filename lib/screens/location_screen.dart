@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
+// import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:weather_good/banner_inline_page.dart';
 import 'package:weather_good/controllers/change_theme.dart';
 import 'package:weather_good/model/weather.dart';
 
@@ -51,6 +55,10 @@ class _LocationScreenState extends State<LocationScreen> {
     });
   }
 
+  Future<InitializationStatus> _initGoogleMobileAds() {
+    return MobileAds.instance.initialize();
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
@@ -63,10 +71,10 @@ class _LocationScreenState extends State<LocationScreen> {
                 ? const AssetImage('assets/images/black_background.png')
                 : const AssetImage('assets/images/light_background.png'),
             fit: BoxFit.fill,
-            colorFilter: ColorFilter.mode(
-              Colors.white.withOpacity(0.8),
-              BlendMode.dst,
-            ),
+            // colorFilter: ColorFilter.mode(
+            //   Colors.white.withOpacity(0.8),
+            //   BlendMode.dst,
+            // ),
           ),
         ),
         constraints: const BoxConstraints.expand(),
@@ -77,23 +85,31 @@ class _LocationScreenState extends State<LocationScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Switch(
-                    activeThumbImage: const AssetImage(
-                      'assets/images/moon.png',
+                  oneday ? Padding(
+                    padding: const EdgeInsets.only(right: 15),
+                    child: Transform.scale(
+                      scale: 1.8,
+                      child: Switch(
+                        activeTrackColor: Colors.black.withOpacity(0.8),
+                        activeThumbImage: const AssetImage(
+                          'assets/images/moon.png',
+                        ),
+                        inactiveThumbImage:
+                            AssetImage('assets/images/suni.png'),
+                        activeColor: Colors.black87,
+                        inactiveThumbColor: Color(0x8C44464D),
+                        value: themeProvider.isDarkMode,
+                        onChanged: (value) {
+                          setState(() {
+                            number = !number;
+                            final provider = Provider.of<ThemeProvider>(context,
+                                listen: false);
+                            provider.toggleTheme(value);
+                          });
+                        },
+                      ),
                     ),
-                    inactiveThumbImage:
-                        const AssetImage('assets/images/suni.png'),
-                    activeColor: Theme.of(context).shadowColor,
-                    value: themeProvider.isDarkMode,
-                    onChanged: (value) {
-                      setState(() {
-                        number = !number;
-                        final provider =
-                            Provider.of<ThemeProvider>(context, listen: false);
-                        provider.toggleTheme(value);
-                      });
-                    },
-                  ),
+                  ) : SizedBox(),
                   Padding(
                     padding: const EdgeInsets.only(left: 8),
                     child: Row(
@@ -115,7 +131,7 @@ class _LocationScreenState extends State<LocationScreen> {
                             SizedBox(
                               width: 290,
                               child: Text(
-                                name,
+                                name == 'Null' ? country : name,
                                 style: const TextStyle(
                                     fontSize: 38, fontFamily: 'NotoSerif'),
                                 overflow: TextOverflow.ellipsis,
@@ -151,6 +167,7 @@ class _LocationScreenState extends State<LocationScreen> {
                   ),
                 ],
               ),
+
               oneday == true
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -164,8 +181,10 @@ class _LocationScreenState extends State<LocationScreen> {
                       ],
                     )
                   : const SizedBox(),
-              if (oneday == true)
-                Container(
+
+              Column(children: [
+                oneday == true
+                    ? Container(
                   decoration: BoxDecoration(
                       color: themeProvider.isDarkMode
                           ? Colors.black.withOpacity(0.55)
@@ -236,7 +255,7 @@ class _LocationScreenState extends State<LocationScreen> {
                     ],
                   ),
                 )
-              else
+                    :
                 Container(
                   decoration: BoxDecoration(
                       color: themeProvider.isDarkMode
@@ -295,11 +314,11 @@ class _LocationScreenState extends State<LocationScreen> {
                                       times2[index].code, 50),
                                   const SizedBox(width: 10),
                                   SizedBox(
-                                    width: 135,
+                                    width: 125,
                                     child: Text(
                                       times2[index].condition,
                                       style: const TextStyle(
-                                        fontSize: 20,
+                                        fontSize: 17,
                                         fontFamily: 'NotoSerif',
                                       ),
                                       textAlign: TextAlign.center,
@@ -311,7 +330,7 @@ class _LocationScreenState extends State<LocationScreen> {
                                       style: const TextStyle(
                                           fontSize: 19,
                                           fontFamily: 'NotoSerif')),
-                                  const SizedBox(width: 3),
+                                  const SizedBox(width: 5),
                                   Text(
                                       '${times2[index].minTemp.toString().contains('-') ? times2[index].minTemp.toString() : '+${times2[index].minTemp.toString()}'}°',
                                       style: const TextStyle(
@@ -324,9 +343,19 @@ class _LocationScreenState extends State<LocationScreen> {
                           },
                         ),
                       ),
+
+
                     ],
                   ),
                 ),
+                Container(
+                  color: themeProvider.isDarkMode ? Colors.black.withOpacity(0.55): Colors.white.withOpacity(0.55),
+                  height: 50,
+                  width: MediaQuery.of(context).size.width,
+                  child: BannerInlinePage(),
+                ),
+              ],),
+
             ],
           ),
         ),
@@ -336,3 +365,11 @@ class _LocationScreenState extends State<LocationScreen> {
 }
 
 List<String> daysWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+//
+// final BannerAd myBanner = BannerAd(
+//   adUnitId: 'ca-app-pub-3940256099942544/6300978111',
+//   size: AdSize.banner,
+//   request: AdRequest(),
+//   listener: BannerAdListener(),
+// );
+// final AdSize adSize = AdSize(width: 320, height: 50);
