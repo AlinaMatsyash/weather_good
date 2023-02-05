@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:weather_good/controllers/change_theme.dart';
 
@@ -43,11 +44,11 @@ class _CityScreenState extends State<CityScreen> {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 200,
+              SizedBox(
+                height: 250.h,
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
                 child: Container(
                   decoration: BoxDecoration(
                       color: themeProvider.isDarkMode
@@ -56,7 +57,7 @@ class _CityScreenState extends State<CityScreen> {
                       borderRadius: BorderRadius.circular(16.0)),
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
-                    style: const TextStyle(color: Colors.white, fontSize: 24),
+                    style: TextStyle(color: Colors.white, fontSize: 24.sp),
                     decoration: InputDecoration(
                       icon: Image.asset('assets/images/city.png'),
                       hintText: 'Enter City Name',
@@ -71,17 +72,17 @@ class _CityScreenState extends State<CityScreen> {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 30,
+              SizedBox(
+                height: 30.h,
               ),
               InkWell(
                 onTap: () {
                   Navigator.pop(context, cityName);
                 },
-                child: const Text(
+                child: Text(
                   'Get Weather',
                   style: TextStyle(
-                      fontSize: 32,
+                      fontSize: 32.sp,
                       decoration: TextDecoration.underline,
                       color: Colors.white),
                 ),

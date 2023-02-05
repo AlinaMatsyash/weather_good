@@ -10,13 +10,10 @@ class BannerInlinePage extends StatefulWidget {
 }
 
 class _BannerInlinePageState extends State<BannerInlinePage> {
-  // TODO: Add _kAdIndex
   static final _kAdIndex = 4;
 
-  // TODO: Add a banner ad instance
   BannerAd? _ad;
 
-  // TODO: Add _getDestinationItemIndex()
   int _getDestinationItemIndex(int rawIndex) {
     if (rawIndex >= _kAdIndex && _ad != null) {
       return rawIndex - 1;
@@ -27,7 +24,6 @@ class _BannerInlinePageState extends State<BannerInlinePage> {
   @override
   void initState() {
     super.initState();
-    // TODO: Load a banner ad
     BannerAd(
       adUnitId: AdHelper.bannerAdUnitId,
       size: AdSize.banner,
@@ -50,7 +46,6 @@ class _BannerInlinePageState extends State<BannerInlinePage> {
   @override
   void dispose() {
     _ad?.dispose();
-    // TODO: implement dispose
     super.dispose();
   }
 

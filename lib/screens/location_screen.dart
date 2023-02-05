@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 // import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -43,6 +44,14 @@ class _LocationScreenState extends State<LocationScreen> {
         currentTemp = 0;
         name = 'Error';
         country = '';
+        code = 0;
+        condition = '';
+        times1 = [Times(time: '', temp: 0, condition: condition, code: code)];
+        times2 = [
+          TempWeather(times: [
+            Times(time: '', temp: 0, condition: condition, code: code)
+          ], condition: condition, code: code, maxTemp: 0, minTemp: 0)
+        ];
         return;
       }
       code = weatherData.code;
@@ -71,10 +80,6 @@ class _LocationScreenState extends State<LocationScreen> {
                 ? const AssetImage('assets/images/black_background.png')
                 : const AssetImage('assets/images/light_background.png'),
             fit: BoxFit.fill,
-            // colorFilter: ColorFilter.mode(
-            //   Colors.white.withOpacity(0.8),
-            //   BlendMode.dst,
-            // ),
           ),
         ),
         constraints: const BoxConstraints.expand(),
@@ -85,31 +90,34 @@ class _LocationScreenState extends State<LocationScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  oneday ? Padding(
-                    padding: const EdgeInsets.only(right: 15),
-                    child: Transform.scale(
-                      scale: 1.8,
-                      child: Switch(
-                        activeTrackColor: Colors.black.withOpacity(0.8),
-                        activeThumbImage: const AssetImage(
-                          'assets/images/moon.png',
-                        ),
-                        inactiveThumbImage:
-                            AssetImage('assets/images/suni.png'),
-                        activeColor: Colors.black87,
-                        inactiveThumbColor: Color(0x8C44464D),
-                        value: themeProvider.isDarkMode,
-                        onChanged: (value) {
-                          setState(() {
-                            number = !number;
-                            final provider = Provider.of<ThemeProvider>(context,
-                                listen: false);
-                            provider.toggleTheme(value);
-                          });
-                        },
-                      ),
-                    ),
-                  ) : SizedBox(),
+                  oneday
+                      ? Padding(
+                          padding: EdgeInsets.only(right: 16.w),
+                          child: Transform.scale(
+                            scale: 1.8,
+                            child: Switch(
+                              activeTrackColor: Colors.black.withOpacity(0.8),
+                              activeThumbImage: const AssetImage(
+                                'assets/images/moon.png',
+                              ),
+                              inactiveThumbImage:
+                                  AssetImage('assets/images/suni.png'),
+                              activeColor: Colors.black87,
+                              inactiveThumbColor: Color(0x8C44464D),
+                              value: themeProvider.isDarkMode,
+                              onChanged: (value) {
+                                setState(() {
+                                  number = !number;
+                                  final provider = Provider.of<ThemeProvider>(
+                                      context,
+                                      listen: false);
+                                  provider.toggleTheme(value);
+                                });
+                              },
+                            ),
+                          ),
+                        )
+                      : SizedBox(),
                   Padding(
                     padding: const EdgeInsets.only(left: 8),
                     child: Row(
@@ -125,11 +133,11 @@ class _LocationScreenState extends State<LocationScreen> {
                               },
                               child: Image.asset('assets/images/location.png'),
                             ),
-                            const SizedBox(
-                              width: 8,
+                            SizedBox(
+                              width: 8.w,
                             ),
                             SizedBox(
-                              width: 290,
+                              width: 245.w,
                               child: Text(
                                 name == 'Null' ? country : name,
                                 style: const TextStyle(
@@ -141,7 +149,7 @@ class _LocationScreenState extends State<LocationScreen> {
                           ],
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(right: 8),
+                          padding: EdgeInsets.only(right: 8.w),
                           child: InkWell(
                             onTap: () async {
                               var typedName = await Navigator.push(
@@ -167,195 +175,202 @@ class _LocationScreenState extends State<LocationScreen> {
                   ),
                 ],
               ),
-
               oneday == true
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           '${currentTemp.toString().contains('-') ? currentTemp : "+ $currentTemp"}°',
-                          style: const TextStyle(
-                              fontSize: 100, fontFamily: 'NotoSerif'),
+                          style: TextStyle(
+                              fontSize: 100.sp, fontFamily: 'NotoSerif'),
                         ),
                         weather.getWeatherIcon(code, 150),
                       ],
                     )
                   : const SizedBox(),
-
-              Column(children: [
-                oneday == true
-                    ? Container(
-                  decoration: BoxDecoration(
-                      color: themeProvider.isDarkMode
-                          ? Colors.black.withOpacity(0.55)
-                          : Colors.white.withOpacity(0.55),
-                      borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(70),
-                          topRight: Radius.circular(70))),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 42, vertical: 16),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Today',
-                              style: TextStyle(
-                                  fontSize: 35, fontFamily: 'NotoSerif'),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                setState(() {
-                                  oneday = false;
-                                });
-                              },
-                              child: const Text(
-                                '7 days >',
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontFamily: 'NotoSerif',
-                                    decoration: TextDecoration.underline),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 170,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: times1.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Column(
-                                children: [
-                                  Text('${times1[index].temp.toString()}°',
-                                      style: const TextStyle(
-                                          fontSize: 25,
-                                          fontFamily: 'NotoSerif')),
-                                  const SizedBox(height: 10),
-                                  weather.getWeatherIcon(
-                                      times1[index].code, 60),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                      DateFormat.Hm().format(
-                                          DateTime.parse(times1[index].time)),
-                                      style: const TextStyle(
-                                          fontSize: 20,
-                                          fontFamily: 'NotoSerif')),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-                    :
-                Container(
-                  decoration: BoxDecoration(
-                      color: themeProvider.isDarkMode
-                          ? Colors.black.withOpacity(0.55)
-                          : Colors.white.withOpacity(0.55),
-                      borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(70),
-                          topRight: Radius.circular(70))),
-                  child: Column(
-                    children: [
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 42),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                setState(() {
-                                  oneday = true;
-                                });
-                              },
-                              child: const Text(
-                                '< 1 day',
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    decoration: TextDecoration.underline),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height - 225,
-                        child: ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          itemCount: times2.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(13),
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: 45,
-                                    child: Text(
-                                      daysWeek[index],
-                                      style: const TextStyle(
-                                          fontSize: 20,
+              Column(
+                children: [
+                  oneday == true
+                      ? Container(
+                          decoration: BoxDecoration(
+                              color: themeProvider.isDarkMode
+                                  ? Colors.black.withOpacity(0.55)
+                                  : Colors.white.withOpacity(0.55),
+                              borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(70),
+                                  topRight: Radius.circular(70))),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 42.w, vertical: 16.h),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Today',
+                                      style: TextStyle(
+                                          fontSize: 35.sp,
                                           fontFamily: 'NotoSerif'),
                                     ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  weather.getWeatherIcon(
-                                      times2[index].code, 50),
-                                  const SizedBox(width: 10),
-                                  SizedBox(
-                                    width: 125,
-                                    child: Text(
-                                      times2[index].condition,
-                                      style: const TextStyle(
-                                        fontSize: 17,
-                                        fontFamily: 'NotoSerif',
+                                    InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          oneday = false;
+                                        });
+                                      },
+                                      child: Text(
+                                        '7 days >',
+                                        style: TextStyle(
+                                            fontSize: 20.sp,
+                                            fontFamily: 'NotoSerif',
+                                            decoration:
+                                                TextDecoration.underline),
                                       ),
-                                      textAlign: TextAlign.center,
                                     ),
-                                  ),
-                                  const SizedBox(width: 5),
-                                  Text(
-                                      '${times2[index].maxTemp.toString().contains('-') ? times2[index].maxTemp.toString() : '+${times2[index].maxTemp.toString()}'}°',
-                                      style: const TextStyle(
-                                          fontSize: 19,
-                                          fontFamily: 'NotoSerif')),
-                                  const SizedBox(width: 5),
-                                  Text(
-                                      '${times2[index].minTemp.toString().contains('-') ? times2[index].minTemp.toString() : '+${times2[index].minTemp.toString()}'}°',
-                                      style: const TextStyle(
-                                          fontSize: 19,
-                                          fontFamily: 'NotoSerif',
-                                          color: Color(0xff504E4E))),
-                                ],
+                                  ],
+                                ),
                               ),
-                            );
-                          },
+                              SizedBox(
+                                height: 190.h,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: times1.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                              '${times1[index].temp.toString()}°',
+                                              style: TextStyle(
+                                                  fontSize: 25.sp,
+                                                  fontFamily: 'NotoSerif')),
+                                          SizedBox(height: 10.h),
+                                          weather.getWeatherIcon(
+                                              times1[index].code, 60),
+                                          SizedBox(height: 10.h),
+                                          Text(
+                                              DateFormat.Hm().format(
+                                                  DateTime.parse(
+                                                      times1[index].time)),
+                                              style: TextStyle(
+                                                  fontSize: 20.sp,
+                                                  fontFamily: 'NotoSerif')),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : Container(
+                          decoration: BoxDecoration(
+                              color: themeProvider.isDarkMode
+                                  ? Colors.black.withOpacity(0.55)
+                                  : Colors.white.withOpacity(0.55),
+                              borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(70),
+                                  topRight: Radius.circular(70))),
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: 16.h,
+                              ),
+                              Padding(
+                                padding:
+                                    EdgeInsets.symmetric(horizontal: 42.w),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          oneday = true;
+                                        });
+                                      },
+                                      child: Text(
+                                        '< 1 day',
+                                        style: TextStyle(
+                                            fontSize: 20.sp,
+                                            decoration:
+                                                TextDecoration.underline),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height - 250.h,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.vertical,
+                                  itemCount: times2.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(13),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          SizedBox(
+                                            width: 45.w,
+                                            child: Text(
+                                              daysWeek[index],
+                                              style: TextStyle(
+                                                  fontSize: 20.sp,
+                                                  fontFamily: 'NotoSerif'),
+                                            ),
+                                          ),
+                                          SizedBox(width: 10.w),
+                                          weather.getWeatherIcon(
+                                              times2[index].code, 50),
+                                          SizedBox(width: 10.w),
+                                          SizedBox(
+                                            width: 117.w,
+                                            child: Text(
+                                              times2[index].condition,
+                                              style: TextStyle(
+                                                fontSize: 17.sp,
+                                                fontFamily: 'NotoSerif',
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                          SizedBox(width: 5.w),
+                                          Text(
+                                              '${times2[index].maxTemp.toString().contains('-') ? times2[index].maxTemp.toString() : '+${times2[index].maxTemp.toString()}'}°',
+                                              style: TextStyle(
+                                                  fontSize: 19.sp,
+                                                  fontFamily: 'NotoSerif')),
+                                          SizedBox(width: 5.w),
+                                          Text(
+                                              '${times2[index].minTemp.toString().contains('-') ? times2[index].minTemp.toString() : '+${times2[index].minTemp.toString()}'}°',
+                                              style: TextStyle(
+                                                  fontSize: 19.sp,
+                                                  fontFamily: 'NotoSerif',
+                                                  color: Color(0xff504E4E))),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-
-
-                    ],
+                  Container(
+                    color: themeProvider.isDarkMode
+                        ? Colors.black.withOpacity(0.55)
+                        : Colors.white.withOpacity(0.55),
+                    height: 50,
+                    width: MediaQuery.of(context).size.width,
+                    child: BannerInlinePage(),
                   ),
-                ),
-                Container(
-                  color: themeProvider.isDarkMode ? Colors.black.withOpacity(0.55): Colors.white.withOpacity(0.55),
-                  height: 50,
-                  width: MediaQuery.of(context).size.width,
-                  child: BannerInlinePage(),
-                ),
-              ],),
-
+                ],
+              ),
             ],
           ),
         ),

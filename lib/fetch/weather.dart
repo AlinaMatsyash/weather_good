@@ -6,7 +6,7 @@ import 'package:weather_good/model/weather.dart';
 import 'package:http/http.dart' as http;
 
 String api = 'http://api.weatherapi.com/v1/forecast.json';
-String key = '';
+String key = 'bc5c8117d9064d9ab25135502232301';
 
 class WeatherModel {
   Future<dynamic> getCityWeather(String cityName) async {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_storage/get_storage.dart';
+
 // import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:weather_good/screens/location_screen.dart';
@@ -27,12 +29,18 @@ class _MyAppState extends State<MyApp> {
       create: (context) => ThemeProvider(),
       builder: (context, _) {
         final themeProvider = Provider.of<ThemeProvider>(context);
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          themeMode: themeProvider.themeMode,
-          theme: ProjectTheme.light(),
-          darkTheme: ProjectTheme.dark(),
-          home: SplashScreen(),
-        );
+        return ScreenUtilInit(
+            designSize: const Size(375, 879),
+            minTextAdapt: true,
+            splitScreenMode: true,
+            builder: (context, child) {
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                themeMode: themeProvider.themeMode,
+                theme: ProjectTheme.light(),
+                darkTheme: ProjectTheme.dark(),
+                home: SplashScreen(),
+              );
+            });
       });
 }
