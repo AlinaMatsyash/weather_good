@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:weather_good/ad_helper.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+
 //
 class BannerInlinePage extends StatefulWidget {
   const BannerInlinePage({Key? key}) : super(key: key);
@@ -35,7 +36,6 @@ class _BannerInlinePageState extends State<BannerInlinePage> {
           });
         },
         onAdFailedToLoad: (ad, error) {
-          // Releases an ad resource when it fails to load
           ad.dispose();
           print('Ad load failed (code=${error.code} message=${error.message})');
         },

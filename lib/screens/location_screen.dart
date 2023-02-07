@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-
-// import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:weather_good/banner_inline_page.dart';
@@ -31,11 +29,23 @@ class _LocationScreenState extends State<LocationScreen> {
   late List<Times> times1;
   late List<TempWeather> times2;
   bool oneday = true;
+  ScrollController _controller = ScrollController();
 
   @override
   void initState() {
     super.initState();
     updateUI(widget.locationWeather);
+    int date = DateTime.now().hour;
+    if (date == 0 || date == 1 || date == 2 || date == 3 || date == 4) {
+    } else if (date == 19 ||
+        date == 20 ||
+        date == 21 ||
+        date == 22 ||
+        date == 23) {
+      _controller = ScrollController(initialScrollOffset: 23 * 80);
+    } else {
+      _controller = ScrollController(initialScrollOffset: date * 60.0);
+    }
   }
 
   void updateUI(dynamic weatherData) {
@@ -61,12 +71,15 @@ class _LocationScreenState extends State<LocationScreen> {
       condition = weatherData.condition;
       times1 = weatherData.daysTemp[0].times;
       times2 = weatherData.daysTemp;
+      print(times2);
     });
   }
 
   Future<InitializationStatus> _initGoogleMobileAds() {
     return MobileAds.instance.initialize();
   }
+
+  String message = "";
 
   @override
   Widget build(BuildContext context) {
@@ -90,34 +103,31 @@ class _LocationScreenState extends State<LocationScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  oneday
-                      ? Padding(
-                          padding: EdgeInsets.only(right: 16.w),
-                          child: Transform.scale(
-                            scale: 1.8,
-                            child: Switch(
-                              activeTrackColor: Colors.black.withOpacity(0.8),
-                              activeThumbImage: const AssetImage(
-                                'assets/images/moon.png',
-                              ),
-                              inactiveThumbImage:
-                                  AssetImage('assets/images/suni.png'),
-                              activeColor: Colors.black87,
-                              inactiveThumbColor: Color(0x8C44464D),
-                              value: themeProvider.isDarkMode,
-                              onChanged: (value) {
-                                setState(() {
-                                  number = !number;
-                                  final provider = Provider.of<ThemeProvider>(
-                                      context,
-                                      listen: false);
-                                  provider.toggleTheme(value);
-                                });
-                              },
-                            ),
-                          ),
-                        )
-                      : SizedBox(),
+                  Padding(
+                    padding: EdgeInsets.only(right: 16.w),
+                    child: Transform.scale(
+                      scale: 1.8,
+                      child: Switch(
+                        activeTrackColor: Colors.black.withOpacity(0.8),
+                        activeThumbImage: const AssetImage(
+                          'assets/images/moon.png',
+                        ),
+                        inactiveThumbImage:
+                            AssetImage('assets/images/suni.png'),
+                        activeColor: Colors.black87,
+                        inactiveThumbColor: Color(0x8C44464D),
+                        value: themeProvider.isDarkMode,
+                        onChanged: (value) {
+                          setState(() {
+                            number = !number;
+                            final provider = Provider.of<ThemeProvider>(context,
+                                listen: false);
+                            provider.toggleTheme(value);
+                          });
+                        },
+                      ),
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8),
                     child: Row(
@@ -221,7 +231,7 @@ class _LocationScreenState extends State<LocationScreen> {
                                         });
                                       },
                                       child: Text(
-                                        '7 days >',
+                                        '3 days >',
                                         style: TextStyle(
                                             fontSize: 20.sp,
                                             fontFamily: 'NotoSerif',
@@ -235,6 +245,7 @@ class _LocationScreenState extends State<LocationScreen> {
                               SizedBox(
                                 height: 190.h,
                                 child: ListView.builder(
+                                  controller: _controller,
                                   scrollDirection: Axis.horizontal,
                                   itemCount: times1.length,
                                   itemBuilder: (context, index) {
@@ -281,8 +292,7 @@ class _LocationScreenState extends State<LocationScreen> {
                                 height: 16.h,
                               ),
                               Padding(
-                                padding:
-                                    EdgeInsets.symmetric(horizontal: 42.w),
+                                padding: EdgeInsets.symmetric(horizontal: 42.w),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
@@ -305,7 +315,7 @@ class _LocationScreenState extends State<LocationScreen> {
                               ),
                               SizedBox(
                                 height:
-                                    MediaQuery.of(context).size.height - 250.h,
+                                    MediaQuery.of(context).size.height - 600.h,
                                 child: ListView.builder(
                                   scrollDirection: Axis.vertical,
                                   itemCount: times2.length,
@@ -313,12 +323,17 @@ class _LocationScreenState extends State<LocationScreen> {
                                     return Padding(
                                       padding: const EdgeInsets.all(13),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           SizedBox(
                                             width: 45.w,
                                             child: Text(
-                                              daysWeek[index],
+                                              DateFormat.E().format(
+                                                  DateTime.parse(times2[index]
+                                                      .times
+                                                      .first
+                                                      .time)),
                                               style: TextStyle(
                                                   fontSize: 20.sp,
                                                   fontFamily: 'NotoSerif'),
@@ -378,13 +393,5 @@ class _LocationScreenState extends State<LocationScreen> {
     );
   }
 }
-
-List<String> daysWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 //
-// final BannerAd myBanner = BannerAd(
-//   adUnitId: 'ca-app-pub-3940256099942544/6300978111',
-//   size: AdSize.banner,
-//   request: AdRequest(),
-//   listener: BannerAdListener(),
-// );
-// final AdSize adSize = AdSize(width: 320, height: 50);
+// List<String> daysWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
